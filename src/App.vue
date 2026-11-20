@@ -36,13 +36,14 @@ const submitLogin = async () => {
     loading.value = false;
   }
 };
-function signOut() { 
-  authService.logout();
+const signOut = async () => { 
+  await authService.logout()
   currentUser.value = null;
   loginOpen.value = false 
   email.value = ''
   password.value = ''
   loginError.value = ''
+  await router.replace('/')
 }
 </script>
 

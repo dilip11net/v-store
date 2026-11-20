@@ -1,6 +1,6 @@
 
 import api from './api'
-
+let authStatus = null
 const authService = {
 
   // LOGIN
@@ -77,6 +77,7 @@ const authService = {
     try {
       await api.post('/auth/logout')
     } finally {
+      authStatus = false
       localStorage.removeItem('currentUser')
     }
   },
@@ -101,11 +102,23 @@ const authService = {
 //     return !!this.getToken() && !!this.getUser()
 //   },
 async isLoggedIn() {
+  if (authStatus !== null) {
+            return authStatus
+        }
   try {
-    await api.get('/auth/me')
-    return true
-  } catch {
-    return false
+    const response = await api.get('/auth/me')
+    authStatus = true
+    return authStatus
+  } catch (error) {
+    authStatus = false
+    console.error(
+      'Authentication check failed:',
+      error.response?.status,
+      error.response?.data || error.message
+    )
+
+    authStatus = false
+    return authStatus
   }
 },
 
@@ -169,7 +182,10 @@ async isLoggedIn() {
         'Registration failed. Please try again.'
       )
     }
-  }
+  },
+  resetAuth() {
+        authStatus = null
+    }
 
 }
 
